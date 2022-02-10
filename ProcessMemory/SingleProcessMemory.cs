@@ -170,11 +170,13 @@ namespace ProcessMemory
 
         public bool WriteStringToOffsets(IEnumerable<long> offsets, string stringToWrite, Encoding encoding)
         {
+            stringToWrite += "\0";
             return WriteBytesToOffsets(offsets, encoding.GetBytes(stringToWrite));
         }
 
         public bool WriteStringToOffset(long offset, string stringToWrite, Encoding encoding)
         {
+            stringToWrite += "\0";
             return WriteBytesToOffsets(new long[] { offset }, encoding.GetBytes(stringToWrite));
         }
 
@@ -470,6 +472,8 @@ namespace ProcessMemory
             m_tracer.TraceInformation($"Disposing: {nameof(m_process)}");
             m_process?.Dispose();
         }
+
+        // TODO: Add Write and Read methods for data type Long (Int64) also add it in the interface.
 
         #endregion
 
