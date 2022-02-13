@@ -123,69 +123,79 @@ namespace ProcessMemory
         #endregion
 
         #region public methods
-        public bool WriteBytesToOffset(long offset, IEnumerable<byte> bytesToWrite)
+        public bool WriteBytesToOffset(long offset, IEnumerable<byte> bytesToWrite, string moduleName)
         {
-            return WriteBytesToOffsets(new long[] { offset }, bytesToWrite);
+            return WriteBytesToOffsets(new long[] { offset }, bytesToWrite, moduleName);
         }
 
-        public bool WriteByteToOffsets(IEnumerable<long> offsets, byte byteToWrite)
+        public bool WriteByteToOffsets(IEnumerable<long> offsets, byte byteToWrite, string moduleName)
         {
-            return WriteBytesToOffsets(offsets, new byte[] { byteToWrite });
+            return WriteBytesToOffsets(offsets, new byte[] { byteToWrite }, moduleName);
         }
 
-        public bool WriteByteToOffset(long offset, byte byteToWrite)
+        public bool WriteByteToOffset(long offset, byte byteToWrite, string moduleName)
         {
-            return WriteBytesToOffsets(new long[] { offset }, new byte[] { byteToWrite });
+            return WriteBytesToOffsets(new long[] { offset }, new byte[] { byteToWrite }, moduleName);
         }
 
-        public bool WriteIntToOffsets(IEnumerable<long> offsets, int numToWrite)
+        public bool WriteIntToOffsets(IEnumerable<long> offsets, int numToWrite, string moduleName)
         {
-            return WriteBytesToOffsets(offsets, BitConverter.GetBytes(numToWrite));
+            return WriteBytesToOffsets(offsets, BitConverter.GetBytes(numToWrite), moduleName);
         }
 
-        public bool WriteIntToOffset(long offset, int numToWrite)
+        public bool WriteIntToOffset(long offset, int numToWrite, string moduleName)
         {
-            return WriteBytesToOffsets(new long[] { offset }, BitConverter.GetBytes(numToWrite));
+            return WriteBytesToOffsets(new long[] { offset }, BitConverter.GetBytes(numToWrite), moduleName);
         }
 
-        public bool WriteFloatToOffsets(IEnumerable<long> offsets, float numToWrite)
+        public bool WriteFloatToOffsets(IEnumerable<long> offsets, float numToWrite, string moduleName)
         {
-            return WriteBytesToOffsets(offsets, BitConverter.GetBytes(numToWrite));
+            return WriteBytesToOffsets(offsets, BitConverter.GetBytes(numToWrite), moduleName);
         }
 
-        public bool WriteFloatToOffset(long offset, float numToWrite)
+        public bool WriteFloatToOffset(long offset, float numToWrite, string moduleName)
         {
-            return WriteBytesToOffsets(new long[] { offset }, BitConverter.GetBytes(numToWrite));
+            return WriteBytesToOffsets(new long[] { offset }, BitConverter.GetBytes(numToWrite), moduleName);
         }
 
-        public bool WriteDoubleToOffsets(IEnumerable<long> offsets, double numToWrite)
+        public bool WriteDoubleToOffsets(IEnumerable<long> offsets, double numToWrite, string moduleName)
         {
-            return WriteBytesToOffsets(offsets, BitConverter.GetBytes(numToWrite));
+            return WriteBytesToOffsets(offsets, BitConverter.GetBytes(numToWrite), moduleName);
         }
 
-        public bool WriteDoubleToOffset(long offset, double numToWrite)
+        public bool WriteDoubleToOffset(long offset, double numToWrite, string moduleName)
         {
-            return WriteBytesToOffsets(new long[] { offset }, BitConverter.GetBytes(numToWrite));
+            return WriteBytesToOffsets(new long[] { offset }, BitConverter.GetBytes(numToWrite), moduleName);
         }
 
-        public bool WriteStringToOffsets(IEnumerable<long> offsets, string stringToWrite, Encoding encoding)
-        {
-            stringToWrite += "\0";
-            return WriteBytesToOffsets(offsets, encoding.GetBytes(stringToWrite));
-        }
-
-        public bool WriteStringToOffset(long offset, string stringToWrite, Encoding encoding)
+        public bool WriteStringToOffsets(IEnumerable<long> offsets, string stringToWrite, Encoding encoding, string moduleName)
         {
             stringToWrite += "\0";
-            return WriteBytesToOffsets(new long[] { offset }, encoding.GetBytes(stringToWrite));
+            return WriteBytesToOffsets(offsets, encoding.GetBytes(stringToWrite), moduleName);
         }
 
-        public bool WriteBytesToOffsets(IEnumerable<long> offsets, IEnumerable<byte> bytesToWrite)
+        public bool WriteStringToOffset(long offset, string stringToWrite, Encoding encoding, string moduleName)
+        {
+            stringToWrite += "\0";
+            return WriteBytesToOffsets(new long[] { offset }, encoding.GetBytes(stringToWrite), moduleName);
+        }
+
+        public bool WriteLongToOffset(long offset, long numToWrite, string moduleName)
+        {
+            return WriteBytesToOffsets(new long[] { offset }, BitConverter.GetBytes(numToWrite), moduleName);
+        }
+
+        public bool WriteLongToOffsets(IEnumerable<long> offsets, long numToWrite, string moduleName)
+        {
+            return WriteBytesToOffsets(offsets, BitConverter.GetBytes(numToWrite), moduleName);
+        }
+
+        public bool WriteBytesToOffsets(IEnumerable<long> offsets, IEnumerable<byte> bytesToWrite, string moduleName)
         {
             if (IsProcessOpen())
             {
                 int numOfBytesToWrite = bytesToWrite.Count();
-                IntPtr address = GetAddress(offsets);
+                IntPtr address = GetAddress(offsets, moduleName);
                 if (address.IsPointerValid())
                 {
                     bool didWriteSucceeded = WriteProcessMemory(m_process.Handle, address, bytesToWrite.ToArray(), numOfBytesToWrite, out int numOfBytesWritten);
@@ -208,11 +218,11 @@ namespace ProcessMemory
             return false;
         }
 
-        public IEnumerable<byte> ReadBytesFromOffsets(IEnumerable<long> offsets, int numOfBytesToRead)
+        public IEnumerable<byte> ReadBytesFromOffsets(IEnumerable<long> offsets, int numOfBytesToRead, string moduleName)
         {
             if (IsProcessOpen())
             {
-                IntPtr address = GetAddress(offsets);
+                IntPtr address = GetAddress(offsets, moduleName);
                 byte[] bytesRead = new byte[numOfBytesToRead];
                 if (ReadProcessMemory(m_process.Handle, address, bytesRead, numOfBytesToRead, out int numOfBytesRead)) 
                 {
@@ -228,14 +238,14 @@ namespace ProcessMemory
             return null;
         }
 
-        public IEnumerable<byte> ReadBytesFromOffset(long offset, int numOfBytesToRead)
+        public IEnumerable<byte> ReadBytesFromOffset(long offset, int numOfBytesToRead, string moduleName)
         {
-            return ReadBytesFromOffsets(new long[] { offset }, numOfBytesToRead);
+            return ReadBytesFromOffsets(new long[] { offset }, numOfBytesToRead, moduleName);
         }
 
-        public byte ReadByteFromOffsets(IEnumerable<long> offsets)
+        public byte ReadByteFromOffsets(IEnumerable<long> offsets, string moduleName)
         {
-            IEnumerable<byte> bytes = ReadBytesFromOffsets(offsets, 1);
+            IEnumerable<byte> bytes = ReadBytesFromOffsets(offsets, 1, moduleName);
             if (bytes == null)
             {
                 return 0x00;
@@ -243,19 +253,19 @@ namespace ProcessMemory
             return bytes.FirstOrDefault();
         }
 
-        public byte ReadByteFromOffset(long offset)
+        public byte ReadByteFromOffset(long offset, string moduleName)
         {
-            return ReadByteFromOffsets(new long[] { offset });
+            return ReadByteFromOffsets(new long[] { offset }, moduleName);
         }
 
-        public int ReadIntFromOffset(long offset)
+        public int ReadIntFromOffset(long offset, string moduleName)
         {
-            return ReadIntFromOffsets(new long[] { offset });
+            return ReadIntFromOffsets(new long[] { offset }, moduleName);
         }
 
-        public int ReadIntFromOffsets(IEnumerable<long> offsets)
+        public int ReadIntFromOffsets(IEnumerable<long> offsets, string moduleName)
         {
-            IEnumerable<byte> bytes = ReadBytesFromOffsets(offsets, sizeof(int));
+            IEnumerable<byte> bytes = ReadBytesFromOffsets(offsets, sizeof(int), moduleName);
             if (bytes == null)
             {
                 return -1;
@@ -263,14 +273,14 @@ namespace ProcessMemory
             return BitConverter.ToInt32(bytes.ToArray());
         }
 
-        public float ReadFloatFromOffset(long offset)
+        public float ReadFloatFromOffset(long offset, string moduleName)
         {
-            return ReadFloatFromOffsets(new long[] { offset });
+            return ReadFloatFromOffsets(new long[] { offset }, moduleName);
         }
 
-        public float ReadFloatFromOffsets(IEnumerable<long> offsets)
+        public float ReadFloatFromOffsets(IEnumerable<long> offsets, string moduleName)
         {
-            IEnumerable<byte> bytes = ReadBytesFromOffsets(offsets, sizeof(float));
+            IEnumerable<byte> bytes = ReadBytesFromOffsets(offsets, sizeof(float), moduleName);
             if (bytes == null)
             {
                 return -1;
@@ -278,14 +288,14 @@ namespace ProcessMemory
             return BitConverter.ToSingle(bytes.ToArray());
         }
 
-        public double ReadDoubleFromOffset(long offset)
+        public double ReadDoubleFromOffset(long offset, string moduleName)
         {
-            return ReadDoubleFromOffsets(new long[] { offset });
+            return ReadDoubleFromOffsets(new long[] { offset }, moduleName);
         }
 
-        public double ReadDoubleFromOffsets(IEnumerable<long> offsets)
+        public double ReadDoubleFromOffsets(IEnumerable<long> offsets, string moduleName)
         {
-            IEnumerable<byte> bytes = ReadBytesFromOffsets(offsets, sizeof(double));
+            IEnumerable<byte> bytes = ReadBytesFromOffsets(offsets, sizeof(double), moduleName);
             if (bytes == null)
             {
                 return -1;
@@ -293,14 +303,30 @@ namespace ProcessMemory
             return BitConverter.ToDouble(bytes.ToArray());
         }
 
-        public string ReadStringFromOffset(long offset, int numOfCharsToRead, Encoding encoding)
+        public long ReadLongFromOffset(long offset, string moduleName)
         {
-            return ReadStringFromOffsets(new long[] { offset }, numOfCharsToRead, encoding);
+            return ReadLongFromOffsets(new long[] { offset }, moduleName);
         }
 
-        public string ReadStringFromOffsets(IEnumerable<long> offsets, int numOfCharsToRead, Encoding encoding)
+        public long ReadLongFromOffsets(IEnumerable<long> offsets, string moduleName)
         {
-            IEnumerable<byte> bytes = ReadBytesFromOffsets(offsets, numOfCharsToRead);
+            IEnumerable<byte> bytes = ReadBytesFromOffsets(offsets, sizeof(long), moduleName);
+            if (bytes == null)
+            {
+                return -1;
+            }
+            return BitConverter.ToInt64(bytes.ToArray());
+        }
+
+        public string ReadStringFromOffset(long offset, int numOfCharsToRead, Encoding encoding, string moduleName)
+        {
+            return ReadStringFromOffsets(new long[] { offset }, numOfCharsToRead, encoding, moduleName);
+        }
+
+        public string ReadStringFromOffsets(IEnumerable<long> offsets, int numOfCharsToRead, Encoding encoding, string moduleName)
+        {
+            int bytePerChar = encoding.GetByteCount("a");
+            IEnumerable<byte> bytes = ReadBytesFromOffsets(offsets, numOfCharsToRead * bytePerChar, moduleName);
             if (bytes == null)
             {
                 return null;
@@ -324,89 +350,100 @@ namespace ProcessMemory
             return true;
         }
 
-        public IntPtr GetAddress(IEnumerable<long> offsets) 
+        public IntPtr GetAddress(IEnumerable<long> offsets, string moduleName) 
         {
             if (IsProcessOpen()) 
             {
                 if (m_is64Bit)
                 {
-                    return Get64BitAddress(offsets);
+                    return Get64BitAddress(offsets, moduleName);
                 }
-                return Get32BitAddress(offsets);
+                return Get32BitAddress(offsets, moduleName);
             }
             m_tracer.TraceWarning($"Process is not open.");
             return IntPtr.Zero;
         }
-        public IntPtr GetAddress(long offset)
+        public IntPtr GetAddress(long offset, string moduleName)
         {
             if (IsProcessOpen())
             {
-                return (IntPtr)(m_process.MainModule.BaseAddress.ToInt64() + offset);
+                ProcessModule module = GetModule(moduleName);
+                if (module == null)
+                {
+                    m_tracer.TraceWarning($"no module named: {moduleName} was loaded by the process named: {m_processName}");
+                    return IntPtr.Zero;
+                }
+                return (IntPtr)(module.BaseAddress.ToInt64() + offset);
             }
             m_tracer.TraceWarning($"Process is not open.");
             return IntPtr.Zero;
         }
 
-        public bool FreezeValue(IEnumerable<long> offsets, float value)
+        public bool FreezeValue(IEnumerable<long> offsets, float value, string moduleName)
         {
-            return FreezeValue(offsets, BitConverter.GetBytes(value));
+            return FreezeValue(offsets, BitConverter.GetBytes(value), moduleName);
         }
 
-        public bool FreezeValue(long offset, float value)
+        public bool FreezeValue(long offset, float value, string moduleName)
         {
-            return FreezeValue(new long[] { offset }, BitConverter.GetBytes(value));
+            return FreezeValue(new long[] { offset }, BitConverter.GetBytes(value), moduleName);
         }
 
-        public bool FreezeValue(IEnumerable<long> offsets, double value)
+        public bool FreezeValue(IEnumerable<long> offsets, double value, string moduleName)
         {
-            return FreezeValue(offsets, BitConverter.GetBytes(value));
+            return FreezeValue(offsets, BitConverter.GetBytes(value), moduleName);
         }
 
-        public bool FreezeValue(long offset, double value)
+        public bool FreezeValue(long offset, double value, string moduleName)
         {
-            return FreezeValue(new long[] { offset }, BitConverter.GetBytes(value));
+            return FreezeValue(new long[] { offset }, BitConverter.GetBytes(value), moduleName);
         }
 
-        public bool FreezeValue(IEnumerable<long> offsets, string value, Encoding encoding)
+        public bool FreezeValue(IEnumerable<long> offsets, string value, Encoding encoding, string moduleName)
         {
-            return FreezeValue(offsets, encoding.GetBytes(value));
+            return FreezeValue(offsets, encoding.GetBytes(value), moduleName);
         }
 
-        public bool FreezeValue(long offset, string value, Encoding encoding)
+        public bool FreezeValue(long offset, string value, Encoding encoding, string moduleName)
         {
-            return FreezeValue(new long[] { offset }, encoding.GetBytes(value));
+            return FreezeValue(new long[] { offset }, encoding.GetBytes(value), moduleName);
         }
 
-        public bool FreezeValue(IEnumerable<long> offsets, int value)
+        public bool FreezeValue(IEnumerable<long> offsets, int value, string moduleName)
         {
-            return FreezeValue(offsets, BitConverter.GetBytes(value));
+            return FreezeValue(offsets, BitConverter.GetBytes(value), moduleName);
         }
 
-        public bool FreezeValue(long offset, int value)
+        public bool FreezeValue(long offset, int value, string moduleName)
         {
-            return FreezeValue(new long[] { offset }, BitConverter.GetBytes(value));
+            return FreezeValue(new long[] { offset }, BitConverter.GetBytes(value), moduleName);
         }
 
-        public bool FreezeValue(IEnumerable<long> offsets, byte value)
+        public bool FreezeValue(IEnumerable<long> offsets, byte value, string moduleName)
         {
-            return FreezeValue(offsets, new byte[] { value });
+            return FreezeValue(offsets, new byte[] { value }, moduleName);
         }
 
-        public bool FreezeValue(long offset, byte value)
+        public bool FreezeValue(long offset, byte value, string moduleName)
         {
-            return FreezeValue(new long[] { offset }, new byte[] { value });
+            return FreezeValue(new long[] { offset }, new byte[] { value }, moduleName);
         }
 
-        public bool UnFreezeValue(long offset)
+        public bool FreezeValue(long offset, long value, string moduleName) 
         {
-            return UnFreezeValue(new long[] { offset });
+            return FreezeValue(new long[] { offset }, BitConverter.GetBytes(value), moduleName);
         }
 
-        public bool UnFreezeValue(IEnumerable<long> offsets)
+        public bool UnFreezeValue(long offset, string moduleName)
+        {
+            return UnFreezeValue(new long[] { offset }, moduleName);
+        }
+
+        public bool UnFreezeValue(IEnumerable<long> offsets, string moduleName)
         {
             if (IsProcessOpen())
             {
-                string key = GetOffsetsAsKey(offsets);
+                string key = GetOffsetsAsKey(offsets)+moduleName.ToLower();
                 if (m_offsetsToCancellationTokenSourceMapping.ContainsKey(key))
                 {
                     if (m_offsetsToCancellationTokenSourceMapping.TryGetValue(key, out CancellationTokenSource cancellationTokenSource))
@@ -455,15 +492,15 @@ namespace ProcessMemory
             return false;
         }
 
-        public bool ChangeMemoryProtection(long offset, int size, MemoryProtection memoryProtection, out MemoryProtection oldMemoryProtection)
+        public bool ChangeMemoryProtection(long offset, int size, MemoryProtection memoryProtection, out MemoryProtection oldMemoryProtection, string moduleName)
         {
-            IntPtr address = GetAddress(offset);
+            IntPtr address = GetAddress(offset, moduleName);
             return ChangeMemoryProtection(address, size, memoryProtection, out oldMemoryProtection);
         }
 
-        public bool ChangeMemoryProtection(IEnumerable<long> offsets, int size, MemoryProtection memoryProtection, out MemoryProtection oldMemoryProtection)
+        public bool ChangeMemoryProtection(IEnumerable<long> offsets, int size, MemoryProtection memoryProtection, out MemoryProtection oldMemoryProtection, string moduleName)
         {
-            IntPtr address = GetAddress(offsets);
+            IntPtr address = GetAddress(offsets, moduleName);
             return ChangeMemoryProtection(address, size, memoryProtection, out oldMemoryProtection);
         }
 
@@ -490,11 +527,17 @@ namespace ProcessMemory
             return isOs64Bit && !isWow64;
         }
 
-        private IntPtr Get32BitAddress(IEnumerable<long> offsets) 
+        private IntPtr Get32BitAddress(IEnumerable<long> offsets, string moduleName) 
         {
             int ptrSize = 4;
             byte[] bytesRead = new byte[ptrSize];
-            IntPtr addressToRead = m_process.MainModule.BaseAddress;
+            ProcessModule module = GetModule(moduleName);
+            if (module == null)
+            {
+                m_tracer.TraceWarning($"no module named: {moduleName} was loaded by the process named: {m_processName}");
+                return IntPtr.Zero;
+            }
+            IntPtr addressToRead = module.BaseAddress;
             foreach (var offset in offsets.SkipLast(1))
             {
                 addressToRead = (IntPtr)(addressToRead.ToInt64() + offset);
@@ -509,11 +552,17 @@ namespace ProcessMemory
             return (IntPtr)(addressToRead.ToInt64() + offsets.Last());
         }
 
-        private IntPtr Get64BitAddress(IEnumerable<long> offsets)
+        private IntPtr Get64BitAddress(IEnumerable<long> offsets, string moduleName)
         {
             int ptrSize = 8;
             byte[] bytesRead = new byte[ptrSize];
-            IntPtr addressToRead = m_process.MainModule.BaseAddress;
+            ProcessModule module = GetModule(moduleName);
+            if (module == null) 
+            {
+                m_tracer.TraceWarning($"no module named: {moduleName} was loaded by the process named: {m_processName}");
+                return IntPtr.Zero;
+            }
+            IntPtr addressToRead = module.BaseAddress;
             foreach (var offset in offsets.SkipLast(1))
             {
                 addressToRead = (IntPtr)(addressToRead.ToInt64() + offset);
@@ -528,11 +577,11 @@ namespace ProcessMemory
             return (IntPtr)(addressToRead.ToInt64() + offsets.Last());
         }
 
-        private bool FreezeValue(IEnumerable<long> offsets, byte[] value)
+        private bool FreezeValue(IEnumerable<long> offsets, byte[] value, string moduleName)
         {
             if (IsProcessOpen())
             {
-                string key = GetOffsetsAsKey(offsets);
+                string key = GetOffsetsAsKey(offsets) + moduleName.ToLower();
                 if (!m_offsetsToCancellationTokenSourceMapping.ContainsKey(key))
                 {
                     CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
@@ -540,11 +589,11 @@ namespace ProcessMemory
                     Task.Factory.StartNew(() =>
                     {
                         int failingInARawCount = 0;
-                        while (true)
+                        while (!cancellationTokenSource.IsCancellationRequested)
                         {
-                            if (!WriteBytesToOffsets(offsets, value))
+                            if (!WriteBytesToOffsets(offsets, value, moduleName))
                             {
-                                m_tracer.TraceWarning($"Failed to write float value to address at offsets: {GetOffsetsAsString(offsets)}, value: {value}");
+                                m_tracer.TraceWarning($"Failed to write value to address at offsets: {GetOffsetsAsString(offsets)}, value: {GetByteArrayAsHexString(value)}");
                                 failingInARawCount++;
                             }
                             else
@@ -570,6 +619,22 @@ namespace ProcessMemory
             }
             m_tracer.TraceWarning($"Process is not open.");
             return false;
+        }
+
+        private ProcessModule GetModule(string moduleName) 
+        {
+            if (moduleName.Equals(ISingleProcessMemory.c_mainModuleName, StringComparison.OrdinalIgnoreCase)) 
+            {
+                return m_process.MainModule;
+            }
+            foreach (ProcessModule module in m_process.Modules) 
+            {
+                if (module.ModuleName.Equals(moduleName, StringComparison.OrdinalIgnoreCase)) 
+                {
+                    return module;
+                }
+            }
+            return null;
         }
         #endregion
     }
