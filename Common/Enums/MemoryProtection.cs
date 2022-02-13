@@ -1,6 +1,7 @@
 ﻿
 namespace Common.Enums
 {
+    // To Find more details about the constants please visit: https://docs.microsoft.com/en-us/windows/win32/memory/memory-protection-constants
     public enum MemoryProtection
     {
         PageNoAccess = 0x01,

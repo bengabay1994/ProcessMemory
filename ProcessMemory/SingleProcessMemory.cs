@@ -334,6 +334,26 @@ namespace ProcessMemory
             return encoding.GetString(bytes.ToArray());
         }
 
+        public IntPtr AllocateMemory(int size, MemoryProtection memoryProtection, MemoryAllocationType memoryAllocationType = ISingleProcessMemory.c_defaultAllocationType) 
+        {
+            if (IsProcessOpen())
+            {
+                if (size > 0)
+                {
+                    return VirtualAllocEx(m_process.Handle, IntPtr.Zero, size, memoryAllocationType, memoryProtection);
+                }
+                else 
+                {
+                    m_tracer.TraceWarning($"Size of memory to allocat must be positive number");
+                }
+            }
+            else 
+            {
+                m_tracer.TraceInformation($"Process is not open.");
+            }
+            return IntPtr.Zero;
+        }
+
         public bool IsProcessOpen()
         {
             if (m_process != null && m_process.HasExited == false)

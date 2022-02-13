@@ -12,6 +12,8 @@ namespace ProcessMemory.Interfaces
     {
         protected const string c_mainModuleName = "mainModule";
 
+        protected const MemoryAllocationType c_defaultAllocationType = MemoryAllocationType.MemCommit | MemoryAllocationType.MemReserve;
+
         public bool WriteBytesToOffsets(IEnumerable<long> offsets, IEnumerable<byte> bytesToWrite, string moduleName = c_mainModuleName);
 
         public bool WriteBytesToOffset(long offset, IEnumerable<byte> bytesToWrite, string moduleName = c_mainModuleName);
@@ -105,5 +107,7 @@ namespace ProcessMemory.Interfaces
         public IntPtr GetAddress(IEnumerable<long> offsets, string moduleName = c_mainModuleName);
 
         public IntPtr GetAddress(long offset, string moduleName = c_mainModuleName);
+
+        public IntPtr AllocateMemory(int size, MemoryProtection memoryProtection, MemoryAllocationType memoryAllocationType = c_defaultAllocationType);
     }
 }
