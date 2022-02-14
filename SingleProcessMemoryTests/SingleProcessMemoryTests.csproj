@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ProcessMemory\ProcessMemory.csproj" />
+    <ProjectReference Include="..\Utils\Utils.csproj" />
   </ItemGroup>
 
 </Project>

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using Common.Enums;
 using System.Threading;
+using static Utils.ExtensionsMethods.IntPtrExtensionMethod;
 
 namespace SingleProcessMemoryTests
 {
@@ -757,6 +758,30 @@ namespace SingleProcessMemoryTests
             Assert.AreEqual(fnumAfterUnFreeze, fnumReadAfterUnFreeze);
             Assert.AreEqual(bnumAfterUnFreeze, bnumReadAfterUnFreeze);
             Assert.AreEqual(snumAfterUnFreeze, snumReadAfterUnFreeze);
+        }
+        #endregion
+
+        #region Memory Allocation Tests
+        [TestMethod]
+        public void AllocateMemoryTest() 
+        {
+            // Arrange
+            int num = 10;
+            long lnum = 29L;
+
+            // Act
+            IntPtr newMem = singleProcessMemory.AllocateMemory(12, MemoryProtection.PageExecuteReadWrite);
+            bool isWriteSucceeded = singleProcessMemory.WriteIntToAddress(newMem, num);
+            bool isWriteSucceeded2 = singleProcessMemory.WriteLongToAddress(newMem + 4, lnum);
+            int numRead = singleProcessMemory.ReadIntFromAddress(newMem);
+            long lnumRead = singleProcessMemory.ReadLongFromAddress(newMem + 4);
+
+            // Assert
+            Assert.IsTrue(newMem.IsPointerValid());
+            Assert.IsTrue(isWriteSucceeded);
+            Assert.IsTrue(isWriteSucceeded2);
+            Assert.AreEqual(num, numRead);
+            Assert.AreEqual(lnum, lnumRead);
         }
         #endregion
 
