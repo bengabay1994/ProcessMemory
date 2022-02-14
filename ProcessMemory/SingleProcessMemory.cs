@@ -710,21 +710,12 @@ namespace ProcessMemory
                     m_offsetsToCancellationTokenSourceMapping.TryAdd(key, cancellationTokenSource);
                     Task.Factory.StartNew(() =>
                     {
-                        int failingInARawCount = 0;
                         while (!cancellationTokenSource.IsCancellationRequested)
                         {
                             if (!WriteBytesToOffsets(offsets, value, moduleName))
                             {
                                 m_tracer.TraceWarning($"Failed to write value to address at offsets: {GetOffsetsAsString(offsets)}, value: {GetByteArrayAsHexString(value)}");
-                                failingInARawCount++;
-                            }
-                            else
-                            {
-                                failingInARawCount = 0;
-                            }
-                            if (failingInARawCount >= 5)
-                            {
-                                cancellationTokenSource.Cancel();
+                                Thread.Sleep(1000);
                             }
                             Thread.Sleep(35);
                         }
