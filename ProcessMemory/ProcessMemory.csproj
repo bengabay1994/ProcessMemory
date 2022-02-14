@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
@@ -6,15 +6,10 @@
     <Authors>Ben Gabay</Authors>
     <Company />
     <Description>This package contains a service that can help manipulate a memory of another process.</Description>
-    <Version>1.0.1-preview</Version>
+    <Version>1.0.2-preview</Version>
     <PackageTags>Process Memory Manipulation Write Read Change</PackageTags>
     <PackageId>ProcessMemoryManager</PackageId>
     <Product>ProcessMemoryManager</Product>
   </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Common\Common.csproj" />
-    <ProjectReference Include="..\Utils\Utils.csproj" />
-  </ItemGroup>
 
 </Project>

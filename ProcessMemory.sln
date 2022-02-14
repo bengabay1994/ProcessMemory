@@ -5,11 +5,7 @@ VisualStudioVersion = 16.0.31321.278
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProcessMemory", "ProcessMemory\ProcessMemory.csproj", "{C4B0B426-6AFB-4C6D-A6EF-DA3FAB4DBF73}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Utils", "Utils\Utils.csproj", "{81EFFBB4-9DD7-4CD6-A1BA-373D5D21209A}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common\Common.csproj", "{339F643E-14D5-49B9-80AB-4DEB1AB01B26}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SingleProcessMemoryTests", "SingleProcessMemoryTests\SingleProcessMemoryTests.csproj", "{E05D520D-1274-4E8E-ADDB-B4845C35234E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SingleProcessMemoryTests", "SingleProcessMemoryTests\SingleProcessMemoryTests.csproj", "{E05D520D-1274-4E8E-ADDB-B4845C35234E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,14 +17,6 @@ Global
 		{C4B0B426-6AFB-4C6D-A6EF-DA3FAB4DBF73}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C4B0B426-6AFB-4C6D-A6EF-DA3FAB4DBF73}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C4B0B426-6AFB-4C6D-A6EF-DA3FAB4DBF73}.Release|Any CPU.Build.0 = Release|Any CPU
-		{81EFFBB4-9DD7-4CD6-A1BA-373D5D21209A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{81EFFBB4-9DD7-4CD6-A1BA-373D5D21209A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{81EFFBB4-9DD7-4CD6-A1BA-373D5D21209A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{81EFFBB4-9DD7-4CD6-A1BA-373D5D21209A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{339F643E-14D5-49B9-80AB-4DEB1AB01B26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{339F643E-14D5-49B9-80AB-4DEB1AB01B26}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{339F643E-14D5-49B9-80AB-4DEB1AB01B26}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{339F643E-14D5-49B9-80AB-4DEB1AB01B26}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E05D520D-1274-4E8E-ADDB-B4845C35234E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E05D520D-1274-4E8E-ADDB-B4845C35234E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E05D520D-1274-4E8E-ADDB-B4845C35234E}.Release|Any CPU.ActiveCfg = Release|Any CPU
