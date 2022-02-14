@@ -123,82 +123,81 @@ namespace ProcessMemory
         #endregion
 
         #region public methods
-        public bool WriteBytesToOffset(long offset, IEnumerable<byte> bytesToWrite, string moduleName)
+        public bool WriteBytesToOffset(long offset, IEnumerable<byte> value, string moduleName)
         {
-            return WriteBytesToOffsets(new long[] { offset }, bytesToWrite, moduleName);
+            return WriteBytesToOffsets(new long[] { offset }, value, moduleName);
         }
 
-        public bool WriteByteToOffsets(IEnumerable<long> offsets, byte byteToWrite, string moduleName)
+        public bool WriteByteToOffsets(IEnumerable<long> offsets, byte value, string moduleName)
         {
-            return WriteBytesToOffsets(offsets, new byte[] { byteToWrite }, moduleName);
+            return WriteBytesToOffsets(offsets, new byte[] { value }, moduleName);
         }
 
-        public bool WriteByteToOffset(long offset, byte byteToWrite, string moduleName)
+        public bool WriteByteToOffset(long offset, byte value, string moduleName)
         {
-            return WriteBytesToOffsets(new long[] { offset }, new byte[] { byteToWrite }, moduleName);
+            return WriteBytesToOffsets(new long[] { offset }, new byte[] { value }, moduleName);
         }
 
-        public bool WriteIntToOffsets(IEnumerable<long> offsets, int numToWrite, string moduleName)
+        public bool WriteIntToOffsets(IEnumerable<long> offsets, int value, string moduleName)
         {
-            return WriteBytesToOffsets(offsets, BitConverter.GetBytes(numToWrite), moduleName);
+            return WriteBytesToOffsets(offsets, BitConverter.GetBytes(value), moduleName);
         }
 
-        public bool WriteIntToOffset(long offset, int numToWrite, string moduleName)
+        public bool WriteIntToOffset(long offset, int value, string moduleName)
         {
-            return WriteBytesToOffsets(new long[] { offset }, BitConverter.GetBytes(numToWrite), moduleName);
+            return WriteBytesToOffsets(new long[] { offset }, BitConverter.GetBytes(value), moduleName);
         }
 
-        public bool WriteFloatToOffsets(IEnumerable<long> offsets, float numToWrite, string moduleName)
+        public bool WriteFloatToOffsets(IEnumerable<long> offsets, float value, string moduleName)
         {
-            return WriteBytesToOffsets(offsets, BitConverter.GetBytes(numToWrite), moduleName);
+            return WriteBytesToOffsets(offsets, BitConverter.GetBytes(value), moduleName);
         }
 
-        public bool WriteFloatToOffset(long offset, float numToWrite, string moduleName)
+        public bool WriteFloatToOffset(long offset, float value, string moduleName)
         {
-            return WriteBytesToOffsets(new long[] { offset }, BitConverter.GetBytes(numToWrite), moduleName);
+            return WriteBytesToOffsets(new long[] { offset }, BitConverter.GetBytes(value), moduleName);
         }
 
-        public bool WriteDoubleToOffsets(IEnumerable<long> offsets, double numToWrite, string moduleName)
+        public bool WriteDoubleToOffsets(IEnumerable<long> offsets, double value, string moduleName)
         {
-            return WriteBytesToOffsets(offsets, BitConverter.GetBytes(numToWrite), moduleName);
+            return WriteBytesToOffsets(offsets, BitConverter.GetBytes(value), moduleName);
         }
 
-        public bool WriteDoubleToOffset(long offset, double numToWrite, string moduleName)
+        public bool WriteDoubleToOffset(long offset, double value, string moduleName)
         {
-            return WriteBytesToOffsets(new long[] { offset }, BitConverter.GetBytes(numToWrite), moduleName);
+            return WriteBytesToOffsets(new long[] { offset }, BitConverter.GetBytes(value), moduleName);
         }
 
-        public bool WriteStringToOffsets(IEnumerable<long> offsets, string stringToWrite, Encoding encoding, string moduleName)
+        public bool WriteStringToOffsets(IEnumerable<long> offsets, string value, Encoding encoding, string moduleName)
         {
-            stringToWrite += "\0";
-            return WriteBytesToOffsets(offsets, encoding.GetBytes(stringToWrite), moduleName);
+            value += "\0";
+            return WriteBytesToOffsets(offsets, encoding.GetBytes(value), moduleName);
         }
 
-        public bool WriteStringToOffset(long offset, string stringToWrite, Encoding encoding, string moduleName)
+        public bool WriteStringToOffset(long offset, string value, Encoding encoding, string moduleName)
         {
-            stringToWrite += "\0";
-            return WriteBytesToOffsets(new long[] { offset }, encoding.GetBytes(stringToWrite), moduleName);
+            value += "\0";
+            return WriteBytesToOffsets(new long[] { offset }, encoding.GetBytes(value), moduleName);
         }
 
-        public bool WriteLongToOffset(long offset, long numToWrite, string moduleName)
+        public bool WriteLongToOffset(long offset, long value, string moduleName)
         {
-            return WriteBytesToOffsets(new long[] { offset }, BitConverter.GetBytes(numToWrite), moduleName);
+            return WriteBytesToOffsets(new long[] { offset }, BitConverter.GetBytes(value), moduleName);
         }
 
-        public bool WriteLongToOffsets(IEnumerable<long> offsets, long numToWrite, string moduleName)
+        public bool WriteLongToOffsets(IEnumerable<long> offsets, long value, string moduleName)
         {
-            return WriteBytesToOffsets(offsets, BitConverter.GetBytes(numToWrite), moduleName);
+            return WriteBytesToOffsets(offsets, BitConverter.GetBytes(value), moduleName);
         }
 
-        public bool WriteBytesToOffsets(IEnumerable<long> offsets, IEnumerable<byte> bytesToWrite, string moduleName)
+        public bool WriteBytesToAddress(IntPtr address, IEnumerable<byte> value)
         {
             if (IsProcessOpen())
             {
-                int numOfBytesToWrite = bytesToWrite.Count();
-                IntPtr address = GetAddress(offsets, moduleName);
+                int numOfBytesToWrite = value.Count();
                 if (address.IsPointerValid())
                 {
-                    bool didWriteSucceeded = WriteProcessMemory(m_process.Handle, address, bytesToWrite.ToArray(), numOfBytesToWrite, out int numOfBytesWritten);
+                    bool didWriteSucceeded = WriteProcessMemory(m_process.Handle, address, value.ToArray(), numOfBytesToWrite, out int numOfBytesWritten);
                     if (didWriteSucceeded)
                     {
                         m_tracer.TraceInformation($"Write to address: {address.ToString($"X{m_zeroPad}")} has succeeded. number of bytes needed to write: {numOfBytesToWrite}, number of bytes succeeded to write: {numOfBytesWritten}");
@@ -208,34 +207,57 @@ namespace ProcessMemory
                 }
                 else
                 {
-                    m_tracer.TraceWarning($"address read from offsets: {GetOffsetsAsString(offsets)} was invalid. address: {address.ToString($"X{m_zeroPad}")}");
+                    m_tracer.TraceWarning($"address was invalid. address: {address.ToString($"X{m_zeroPad}")}");
                 }
             }
             else
             {
-                m_tracer.TraceWarning($"Process is not open so no write has been done.");
+                m_tracer.TraceWarning($"Process is not open.");
             }
             return false;
         }
 
+        public bool WriteByteToAddress(IntPtr address, byte value)
+        {
+            return WriteBytesToAddress(address, new byte[] { value });
+        }
+
+        public bool WriteIntToAddress(IntPtr address, int value)
+        {
+            return WriteBytesToAddress(address, BitConverter.GetBytes(value));
+        }
+
+        public bool WriteLongToAddress(IntPtr address, long value)
+        {
+            return WriteBytesToAddress(address, BitConverter.GetBytes(value));
+        }
+
+        public bool WriteFloatToAddress(IntPtr address, float value)
+        {
+            return WriteBytesToAddress(address, BitConverter.GetBytes(value));
+        }
+
+        public bool WriteDoubleToAddress(IntPtr address, double value)
+        {
+            return WriteBytesToAddress(address, BitConverter.GetBytes(value));
+        }
+
+        public bool WriteStringToAddress(IntPtr address, string value, Encoding encoding)
+        {
+            value += "\0";
+            return WriteBytesToAddress(address, encoding.GetBytes(value));
+        }
+
+        public bool WriteBytesToOffsets(IEnumerable<long> offsets, IEnumerable<byte> bytesToWrite, string moduleName)
+        {
+            IntPtr address = GetAddress(offsets, moduleName);
+            return WriteBytesToAddress(address, bytesToWrite);
+        }
+
         public IEnumerable<byte> ReadBytesFromOffsets(IEnumerable<long> offsets, int numOfBytesToRead, string moduleName)
         {
-            if (IsProcessOpen())
-            {
-                IntPtr address = GetAddress(offsets, moduleName);
-                byte[] bytesRead = new byte[numOfBytesToRead];
-                if (ReadProcessMemory(m_process.Handle, address, bytesRead, numOfBytesToRead, out int numOfBytesRead)) 
-                {
-                    m_tracer.TraceInformation($"Successfully read: {numOfBytesRead} from address: {address}");
-                    return bytesRead;
-                }
-                m_tracer.TraceWarning($"Failed to read from address: {address.ToString($"X{m_zeroPad}")}, numOfBytesToRead: {numOfBytesToRead}, numOfBytesRead: {numOfBytesRead}");
-            }
-            else 
-            {
-                m_tracer.TraceWarning($"Process is not open so no read has been done.");
-            }
-            return null;
+            IntPtr address = GetAddress(offsets, moduleName);
+            return ReadBytesFromAddress(address, numOfBytesToRead);
         }
 
         public IEnumerable<byte> ReadBytesFromOffset(long offset, int numOfBytesToRead, string moduleName)
@@ -327,6 +349,86 @@ namespace ProcessMemory
         {
             int bytePerChar = encoding.GetByteCount("a");
             IEnumerable<byte> bytes = ReadBytesFromOffsets(offsets, numOfCharsToRead * bytePerChar, moduleName);
+            if (bytes == null)
+            {
+                return null;
+            }
+            return encoding.GetString(bytes.ToArray());
+        }
+
+        public IEnumerable<byte> ReadBytesFromAddress(IntPtr address, int numOfBytesToRead)
+        {
+            if (IsProcessOpen())
+            {
+                byte[] bytesRead = new byte[numOfBytesToRead];
+                if (ReadProcessMemory(m_process.Handle, address, bytesRead, numOfBytesToRead, out int numOfBytesRead))
+                {
+                    m_tracer.TraceInformation($"Successfully read: {numOfBytesRead} from address: {address}");
+                    return bytesRead;
+                }
+                m_tracer.TraceWarning($"Failed to read from address: {address.ToString($"X{m_zeroPad}")}, numOfBytesToRead: {numOfBytesToRead}, numOfBytesRead: {numOfBytesRead}");
+            }
+            else
+            {
+                m_tracer.TraceWarning($"Process is not open so no read has been done.");
+            }
+            return null;
+        }
+
+        public byte ReadByteFromAddress(IntPtr address)
+        {
+            IEnumerable<byte> bytes = ReadBytesFromAddress(address, 1);
+            if (bytes == null)
+            {
+                return 0x00;
+            }
+            return bytes.FirstOrDefault();
+        }
+
+        public int ReadIntFromAddress(IntPtr address)
+        {
+            IEnumerable<byte> bytes = ReadBytesFromAddress(address, sizeof(int));
+            if (bytes == null)
+            {
+                return -1;
+            }
+            return BitConverter.ToInt32(bytes.ToArray());
+        }
+
+        public long ReadLongFromAddress(IntPtr address)
+        {
+            IEnumerable<byte> bytes = ReadBytesFromAddress(address, sizeof(long));
+            if (bytes == null)
+            {
+                return -1;
+            }
+            return BitConverter.ToInt64(bytes.ToArray());
+        }
+
+        public float ReadFloatFromAddress(IntPtr address)
+        {
+            IEnumerable<byte> bytes = ReadBytesFromAddress(address, sizeof(float));
+            if (bytes == null)
+            {
+                return -1;
+            }
+            return BitConverter.ToSingle(bytes.ToArray());
+        }
+
+        public double ReadDoubleFromAddress(IntPtr address)
+        {
+            IEnumerable<byte> bytes = ReadBytesFromAddress(address, sizeof(double));
+            if (bytes == null)
+            {
+                return -1;
+            }
+            return BitConverter.ToDouble(bytes.ToArray());
+        }
+
+        public string ReadStringFromAddress(IntPtr address, int numOfCharsToRead, Encoding encoding)
+        {
+            int bytePerChar = encoding.GetByteCount("a");
+            IEnumerable<byte> bytes = ReadBytesFromAddress(address, numOfCharsToRead * bytePerChar);
             if (bytes == null)
             {
                 return null;
