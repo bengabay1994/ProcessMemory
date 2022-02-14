@@ -6,13 +6,13 @@ using System.Linq;
 using System.Diagnostics;
 using System.ComponentModel;
 using ProcessMemory.Interfaces;
-using Utils;
-using static Utils.Conversions;
-using static Utils.ExtensionsMethods.IntPtrExtensionMethod;
-using static Common.kernel32Methods;
+using ProcessMemory.Utils;
+using static ProcessMemory.Utils.Conversions;
+using static ProcessMemory.Utils.ExtensionsMethods.IntPtrExtensionMethod;
+using static ProcessMemory.Kernel32.kernel32Methods;
 using System.Threading;
 using System.Threading.Tasks;
-using Common.Enums;
+using ProcessMemory.Enums;
 
 namespace ProcessMemory
 {

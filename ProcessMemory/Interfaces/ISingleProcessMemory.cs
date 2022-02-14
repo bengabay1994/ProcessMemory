@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Collections.Generic;
-using Common.Enums;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using ProcessMemory.Enums;
 
 namespace ProcessMemory.Interfaces
 {

@@ -7,9 +7,9 @@ using System.Text;
 using System;
 using System.Linq;
 using System.Runtime.InteropServices;
-using Common.Enums;
+using ProcessMemory.Enums;
 using System.Threading;
-using static Utils.ExtensionsMethods.IntPtrExtensionMethod;
+using static ProcessMemory.Utils.ExtensionsMethods.IntPtrExtensionMethod;
 
 namespace SingleProcessMemoryTests
 {
