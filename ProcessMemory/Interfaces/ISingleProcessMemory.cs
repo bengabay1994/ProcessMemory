@@ -117,9 +117,23 @@ namespace ProcessMemory.Interfaces
 
         public bool FreezeValue(long offset, long value, string moduleName = c_mainModuleName);
 
+        public bool FreezeValue(Func<object, IntPtr> getAddress, object dataToCalculateAddress, string uniqueKey, long value);
+
+        public bool FreezeValue(Func<object, IntPtr> getAddress, object dataToCalculateAddress, string uniqueKey, byte value);
+
+        public bool FreezeValue(Func<object, IntPtr> getAddress, object dataToCalculateAddress, string uniqueKey, int value);
+
+        public bool FreezeValue(Func<object, IntPtr> getAddress, object dataToCalculateAddress, string uniqueKey, string value, Encoding encoding);
+
+        public bool FreezeValue(Func<object, IntPtr> getAddress, object dataToCalculateAddress, string uniqueKey, double value);
+
+        public bool FreezeValue(Func<object, IntPtr> getAddress, object dataToCalculateAddress, string uniqueKey, float value);
+
         public bool UnFreezeValue(long offset, string moduleName = c_mainModuleName);
 
         public bool UnFreezeValue(IEnumerable<long> offsets, string moduleName = c_mainModuleName);
+
+        public bool UnFreezeValue(string uniqueKey);
 
         public bool IsProcessOpen();
 
