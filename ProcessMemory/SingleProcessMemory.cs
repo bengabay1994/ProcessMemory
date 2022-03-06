@@ -797,17 +797,12 @@ namespace ProcessMemory
                 if (!m_offsetsToCancellationTokenSourceMapping.ContainsKey(uniqueKey))
                 {
                     CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-                    IntPtr address = getAddress(dataToCalculateAddress);
-                    if (!address.IsPointerValid()) 
-                    {
-                        m_tracer.TraceWarning($"address that was calculated from the func: {nameof(getAddress)} that was passed to this function was invalid. address: {address.ToString($"X{m_zeroPad}")}");
-                        return false;
-                    }
                     m_offsetsToCancellationTokenSourceMapping.TryAdd(uniqueKey, cancellationTokenSource);
                     Task.Factory.StartNew(() =>
                     {
                         while (!cancellationTokenSource.IsCancellationRequested)
                         {
+                            IntPtr address = getAddress(dataToCalculateAddress);
                             if (!WriteBytesToAddress(address, value))
                             {
                                 m_tracer.TraceWarning($"Failed to write value to address: {address}, value: {GetByteArrayAsHexString(value)}");
