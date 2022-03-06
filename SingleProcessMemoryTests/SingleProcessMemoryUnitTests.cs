@@ -759,6 +759,89 @@ namespace SingleProcessMemoryTests
             Assert.AreEqual(bnumAfterUnFreeze, bnumReadAfterUnFreeze);
             Assert.AreEqual(snumAfterUnFreeze, snumReadAfterUnFreeze);
         }
+
+        [TestMethod]
+        public void FullFreezeTest2() 
+        {
+            // Arrange
+            int inum = 100;
+            long lnum = 5000;
+            double dnum = 300.124;
+            float fnum = 200.754f;
+            byte bnum = 0x20;
+            string snum = "23";
+            int inumAfterUnFreeze = 101;
+            long lnumAfterUnFreeze = 5001;
+            double dnumAfterUnFreeze = 301.124;
+            float fnumAfterUnFreeze = 201.754f;
+            byte bnumAfterUnFreeze = 0x21;
+            string snumAfterUnFreeze = "24";
+            List<bool> condToCheckTrue = new List<bool>();
+            var encoding = Encoding.Unicode;
+            int baseOffset = 900;
+
+            // Act
+            condToCheckTrue.Add(singleProcessMemory.FreezeValue(getAddress, (object)baseOffset, "key1", inum));
+            condToCheckTrue.Add(singleProcessMemory.FreezeValue(getAddress, (object)(baseOffset + 4), "key2", lnum));
+            condToCheckTrue.Add(singleProcessMemory.FreezeValue(getAddress, (object)(baseOffset + 12), "key3", dnum));
+            condToCheckTrue.Add(singleProcessMemory.FreezeValue(getAddress, (object)(baseOffset + 20), "key4", fnum));
+            condToCheckTrue.Add(singleProcessMemory.FreezeValue(getAddress, (object)(baseOffset + 24), "key5", bnum));
+            condToCheckTrue.Add(singleProcessMemory.FreezeValue(getAddress, (object)(baseOffset + 25), "key6", snum, encoding));
+
+            // writing different values to make sure the freeze will override them.
+            condToCheckTrue.Add(singleProcessMemory.WriteIntToAddress(addressOfTestedMemory + baseOffset, inumAfterUnFreeze));
+            condToCheckTrue.Add(singleProcessMemory.WriteLongToAddress(addressOfTestedMemory + baseOffset + 4, lnumAfterUnFreeze));
+            condToCheckTrue.Add(singleProcessMemory.WriteDoubleToAddress(addressOfTestedMemory + baseOffset + 12, dnumAfterUnFreeze));
+            condToCheckTrue.Add(singleProcessMemory.WriteFloatToAddress(addressOfTestedMemory + baseOffset + 20, fnumAfterUnFreeze));
+            condToCheckTrue.Add(singleProcessMemory.WriteByteToAddress(addressOfTestedMemory + baseOffset + 24, bnumAfterUnFreeze));
+            condToCheckTrue.Add(singleProcessMemory.WriteStringToAddress(addressOfTestedMemory + baseOffset + 25, snumAfterUnFreeze, encoding));
+
+            Thread.Sleep(50); // let the freeze threads write the real values back
+
+            int inumRead = singleProcessMemory.ReadIntFromAddress(addressOfTestedMemory + baseOffset);
+            long lnumRead = singleProcessMemory.ReadLongFromAddress(addressOfTestedMemory + baseOffset + 4);
+            double dnumRead = singleProcessMemory.ReadDoubleFromAddress(addressOfTestedMemory + baseOffset + 12);
+            float fnumRead = singleProcessMemory.ReadFloatFromAddress(addressOfTestedMemory + baseOffset + 20);
+            byte bnumRead = singleProcessMemory.ReadByteFromAddress(addressOfTestedMemory + baseOffset + 24);
+            string snumRead = singleProcessMemory.ReadStringFromAddress(addressOfTestedMemory + baseOffset + 25, snum.Length, encoding);
+
+            condToCheckTrue.Add(singleProcessMemory.UnFreezeValue("key1"));
+            condToCheckTrue.Add(singleProcessMemory.UnFreezeValue("key2"));
+            condToCheckTrue.Add(singleProcessMemory.UnFreezeValue("key3"));
+            condToCheckTrue.Add(singleProcessMemory.UnFreezeValue("key4"));
+            condToCheckTrue.Add(singleProcessMemory.UnFreezeValue("key5"));
+            condToCheckTrue.Add(singleProcessMemory.UnFreezeValue("key6"));
+
+            // writing different values to make sure the Unfreeze worked.
+            condToCheckTrue.Add(singleProcessMemory.WriteIntToAddress(addressOfTestedMemory + baseOffset, inumAfterUnFreeze));
+            condToCheckTrue.Add(singleProcessMemory.WriteLongToAddress(addressOfTestedMemory + baseOffset + 4, lnumAfterUnFreeze));
+            condToCheckTrue.Add(singleProcessMemory.WriteDoubleToAddress(addressOfTestedMemory + baseOffset + 12, dnumAfterUnFreeze));
+            condToCheckTrue.Add(singleProcessMemory.WriteFloatToAddress(addressOfTestedMemory + baseOffset + 20, fnumAfterUnFreeze));
+            condToCheckTrue.Add(singleProcessMemory.WriteByteToAddress(addressOfTestedMemory + baseOffset + 24, bnumAfterUnFreeze));
+            condToCheckTrue.Add(singleProcessMemory.WriteStringToAddress(addressOfTestedMemory + baseOffset + 25, snumAfterUnFreeze, encoding));
+
+            int inumReadAfterUnFreeze = singleProcessMemory.ReadIntFromAddress(addressOfTestedMemory + baseOffset);
+            long lnumReadAfterUnFreeze = singleProcessMemory.ReadLongFromAddress(addressOfTestedMemory + baseOffset + 4);
+            double dnumReadAfterUnFreeze = singleProcessMemory.ReadDoubleFromAddress(addressOfTestedMemory + baseOffset + 12);
+            float fnumReadAfterUnFreeze = singleProcessMemory.ReadFloatFromAddress(addressOfTestedMemory + baseOffset + 20);
+            byte bnumReadAfterUnFreeze = singleProcessMemory.ReadByteFromAddress(addressOfTestedMemory + baseOffset + 24);
+            string snumReadAfterUnFreeze = singleProcessMemory.ReadStringFromAddress(addressOfTestedMemory + baseOffset + 25, snum.Length, encoding);
+
+            // Assert
+            AreTrues(condToCheckTrue);
+            Assert.AreEqual(inum, inumRead);
+            Assert.AreEqual(lnum, lnumRead);
+            Assert.AreEqual(dnum, dnumRead);
+            Assert.AreEqual(fnum, fnumRead);
+            Assert.AreEqual(bnum, bnumRead);
+            Assert.AreEqual(snum, snumRead);
+            Assert.AreEqual(inumAfterUnFreeze, inumReadAfterUnFreeze);
+            Assert.AreEqual(lnumAfterUnFreeze, lnumReadAfterUnFreeze);
+            Assert.AreEqual(dnumAfterUnFreeze, dnumReadAfterUnFreeze);
+            Assert.AreEqual(fnumAfterUnFreeze, fnumReadAfterUnFreeze);
+            Assert.AreEqual(bnumAfterUnFreeze, bnumReadAfterUnFreeze);
+            Assert.AreEqual(snumAfterUnFreeze, snumReadAfterUnFreeze);
+        }
         #endregion
 
         #region Memory Allocation Tests
@@ -808,6 +891,11 @@ namespace SingleProcessMemoryTests
                 }
             }
             return true;
+        }
+
+        private IntPtr getAddress(object offset)
+        {
+            return addressOfTestedMemory + (int)offset;
         }
 
         private void AreTrues(IEnumerable<bool> checkForTrues) 

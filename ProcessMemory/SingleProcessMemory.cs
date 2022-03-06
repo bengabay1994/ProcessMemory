@@ -556,6 +556,36 @@ namespace ProcessMemory
             return FreezeValue(new long[] { offset }, BitConverter.GetBytes(value), moduleName);
         }
 
+        public bool FreezeValue(Func<object, IntPtr> getAddress, object dataToCalculateAddress, string uniqueKey, long value)
+        {
+            return FreezeValue(getAddress, dataToCalculateAddress, uniqueKey, BitConverter.GetBytes(value));
+        }
+
+        public bool FreezeValue(Func<object, IntPtr> getAddress, object dataToCalculateAddress, string uniqueKey, byte value)
+        {
+            return FreezeValue(getAddress, dataToCalculateAddress, uniqueKey, BitConverter.GetBytes(value));
+        }
+
+        public bool FreezeValue(Func<object, IntPtr> getAddress, object dataToCalculateAddress, string uniqueKey, int value)
+        {
+            return FreezeValue(getAddress, dataToCalculateAddress, uniqueKey, BitConverter.GetBytes(value));
+        }
+
+        public bool FreezeValue(Func<object, IntPtr> getAddress, object dataToCalculateAddress, string uniqueKey, string value, Encoding encoding)
+        {
+            return FreezeValue(getAddress, dataToCalculateAddress, uniqueKey, encoding.GetBytes(value));
+        }
+
+        public bool FreezeValue(Func<object, IntPtr> getAddress, object dataToCalculateAddress, string uniqueKey, double value)
+        {
+            return FreezeValue(getAddress, dataToCalculateAddress, uniqueKey, BitConverter.GetBytes(value));
+        }
+
+        public bool FreezeValue(Func<object, IntPtr> getAddress, object dataToCalculateAddress, string uniqueKey, float value)
+        {
+            return FreezeValue(getAddress, dataToCalculateAddress, uniqueKey, BitConverter.GetBytes(value));
+        }
+
         public bool UnFreezeValue(long offset, string moduleName)
         {
             return UnFreezeValue(new long[] { offset }, moduleName);
@@ -582,6 +612,32 @@ namespace ProcessMemory
                 }
             }
             else 
+            {
+                m_tracer.TraceWarning($"Process is not open.");
+            }
+            return false;
+        }
+
+        public bool UnFreezeValue(string uniqueKey)
+        {
+            if (IsProcessOpen())
+            {
+                if (m_offsetsToCancellationTokenSourceMapping.ContainsKey(uniqueKey))
+                {
+                    if (m_offsetsToCancellationTokenSourceMapping.TryGetValue(uniqueKey, out CancellationTokenSource cancellationTokenSource))
+                    {
+                        cancellationTokenSource.Cancel();
+                        m_offsetsToCancellationTokenSourceMapping.Remove(uniqueKey);
+                        return true;
+                    }
+                    m_tracer.TraceError($"Failed to get cancellationTokenSource for key: {uniqueKey}");
+                }
+                else
+                {
+                    m_tracer.TraceWarning($"No value is freezed on this key: {uniqueKey}");
+                }
+            }
+            else
             {
                 m_tracer.TraceWarning($"Process is not open.");
             }
@@ -715,6 +771,46 @@ namespace ProcessMemory
                             if (!WriteBytesToOffsets(offsets, value, moduleName))
                             {
                                 m_tracer.TraceWarning($"Failed to write value to address at offsets: {GetOffsetsAsString(offsets)}, value: {GetByteArrayAsHexString(value)}");
+                                Thread.Sleep(1000);
+                            }
+                            Thread.Sleep(35);
+                        }
+                    },
+                    cancellationTokenSource.Token);
+
+                    return true;
+                }
+                else
+                {
+                    m_tracer.TraceWarning($"Address is already Freezed. please UnFreeze it before try to Freeze It again");
+                }
+                return false;
+            }
+            m_tracer.TraceWarning($"Process is not open.");
+            return false;
+        }
+
+        private bool FreezeValue(Func<object, IntPtr> getAddress, object dataToCalculateAddress, string uniqueKey, byte[] value)
+        {
+            if (IsProcessOpen())
+            {
+                if (!m_offsetsToCancellationTokenSourceMapping.ContainsKey(uniqueKey))
+                {
+                    CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+                    IntPtr address = getAddress(dataToCalculateAddress);
+                    if (!address.IsPointerValid()) 
+                    {
+                        m_tracer.TraceWarning($"address that was calculated from the func: {nameof(getAddress)} that was passed to this function was invalid. address: {address.ToString($"X{m_zeroPad}")}");
+                        return false;
+                    }
+                    m_offsetsToCancellationTokenSourceMapping.TryAdd(uniqueKey, cancellationTokenSource);
+                    Task.Factory.StartNew(() =>
+                    {
+                        while (!cancellationTokenSource.IsCancellationRequested)
+                        {
+                            if (!WriteBytesToAddress(address, value))
+                            {
+                                m_tracer.TraceWarning($"Failed to write value to address: {address}, value: {GetByteArrayAsHexString(value)}");
                                 Thread.Sleep(1000);
                             }
                             Thread.Sleep(35);
