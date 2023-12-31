@@ -798,7 +798,7 @@ namespace SingleProcessMemoryTests
             condToCheckTrue.Add(singleProcessMemory.WriteByteToAddress(addressOfTestedMemory + baseOffset + 24, bnumAfterUnFreeze));
             condToCheckTrue.Add(singleProcessMemory.WriteStringToAddress(addressOfTestedMemory + baseOffset + 25, snumAfterUnFreeze, encoding));
 
-            Thread.Sleep(250); // let the freeze threads write the real values back
+            Thread.Sleep(500); // let the freeze threads write the real values back
 
             int inumRead = singleProcessMemory.ReadIntFromAddress(addressOfTestedMemory + baseOffset);
             long lnumRead = singleProcessMemory.ReadLongFromAddress(addressOfTestedMemory + baseOffset + 4);
@@ -814,7 +814,7 @@ namespace SingleProcessMemoryTests
             condToCheckTrue.Add(singleProcessMemory.UnFreezeValue("key5"));
             condToCheckTrue.Add(singleProcessMemory.UnFreezeValue("key6"));
 
-            Thread.Sleep(250); // let the cancellation token enough time to cancel the Freeze Address
+            Thread.Sleep(500); // let the cancellation token enough time to cancel the Freeze Address
 
             // writing different values to make sure the Unfreeze worked.
             condToCheckTrue.Add(singleProcessMemory.WriteIntToAddress(addressOfTestedMemory + baseOffset, inumAfterUnFreeze));

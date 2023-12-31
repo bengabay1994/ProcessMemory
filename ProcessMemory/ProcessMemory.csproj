@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Ben Gabay</Authors>
     <Company />
     <Description>This package contains a service that can help manipulate a memory of another process.</Description>
-    <Version>1.0.5-preview</Version>
+    <Version>1.0.6-preview</Version>
     <PackageTags>Process Memory Manipulation Write Read Change</PackageTags>
     <PackageId>ProcessMemoryManager</PackageId>
     <Product>ProcessMemoryManager</Product>
